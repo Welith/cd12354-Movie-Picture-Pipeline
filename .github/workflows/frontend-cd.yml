@@ -1,0 +1,109 @@
+name: Frontend CD
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: starter/frontend
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: NodeJS Configuration
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Caching dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Npm dependencies
+        run: npm ci
+
+      - name: Linting
+        run: npm run lint
+
+  test:
+    name: Test job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: NodeJS Config
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run test
+        run: CI=true npm run test
+
+  build:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: success()
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/frontend
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+
+      - name: Build the docker image
+        run: |
+          docker build \
+            --build-arg=REACT_APP_MOVIE_API_URL=http://backend:5000 \
+            -t ${{ env.IMAGE_NAME }}:${GITHUB_SHA::7} \
+            .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Publish the docker image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag ECR_REPOSITORY:${GITHUB_SHA::7} $REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7}
+          docker push $REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::7}
