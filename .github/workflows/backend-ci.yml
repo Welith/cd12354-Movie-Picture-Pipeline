@@ -43,7 +43,6 @@ jobs:
         shell: bash
         working-directory: starter/backend
     steps:
-      - run: echo "Testing all the things..."
       - name: Get code
         uses: actions/checkout@v3
 
