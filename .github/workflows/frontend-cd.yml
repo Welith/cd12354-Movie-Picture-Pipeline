@@ -8,9 +8,9 @@ on:
       - main
 
 env:
-  IMAGE_NAME: boko-frontend
-  DEPLOYMENT_NAME: boko-frontend
-  EKS_CLUSTER_NAME: boko-cluster
+  IMAGE_NAME: frontend
+  DEPLOYMENT_NAME: frontend
+  EKS_CLUSTER_NAME: cluster
 
 jobs:
   lint:
@@ -109,9 +109,11 @@ jobs:
         run: |
           docker tag $IMAGE_NAME:${GITHUB_SHA::7} $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
           docker push $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
+      
       - name: Kubeconfig Auth
         run: |
           aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region ${{ vars.AWS_REGION }}
+      
       - name: Deploy the Docker image to Amazon EKS
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
