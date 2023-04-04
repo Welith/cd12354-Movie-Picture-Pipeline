@@ -76,7 +76,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: frontend
+        working-directory: starter/frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
