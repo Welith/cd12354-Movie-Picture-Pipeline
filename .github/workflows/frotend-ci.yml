@@ -1,16 +1,39 @@
-name: frontend ci flow
+name: Frontend CI
 
 on:
   workflow_dispatch:
-  pull_request:
+
+  push:
     branches:
       - main
-    paths:
-      - 'starter/frontend/**'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: starter/frontend
 
 jobs:
-  build:
+  lint:
+    name: Linting
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Building"
-      - run: echo "Hello"
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: NodeJS config
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
