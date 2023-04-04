@@ -69,7 +69,7 @@ jobs:
         run: CI=true npm run test
         
   build:
-    name: Build frontend job
+    name: Build frontend step
     runs-on: ubuntu-latest
     needs: [lint, test]
     if: success()
