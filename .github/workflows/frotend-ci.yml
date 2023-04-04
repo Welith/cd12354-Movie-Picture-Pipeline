@@ -3,19 +3,19 @@ name: Frontend CI
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - main
-
-defaults:
-  run:
-    shell: bash
-    working-directory: starter/frontend
+  pull_request:
+    types:
+      - opened
+      - reopened
 
 jobs:
   lint:
     name: Linting
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
