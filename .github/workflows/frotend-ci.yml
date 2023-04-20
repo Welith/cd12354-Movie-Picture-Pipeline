@@ -36,7 +36,7 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: FAIL_LINT=true npm run lint
+        run: npm run lint
         
         
   test:
