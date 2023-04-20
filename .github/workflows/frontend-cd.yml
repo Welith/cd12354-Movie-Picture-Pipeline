@@ -83,7 +83,6 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
-
       - name: Build the docker image
         env:
           REACT_APP_MOVIE_API_URL: ${{ vars.REACT_APP_MOVIE_API_URL }}
