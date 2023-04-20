@@ -34,7 +34,7 @@ jobs:
         run: pipenv install --dev
 
       - name: Linting
-        run: pipenv run lint
+        run: pipenv run lint-fail
 
   test:
     name: Backend code testing
