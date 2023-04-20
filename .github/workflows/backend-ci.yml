@@ -15,7 +15,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: starter/backend
+        working-directory: backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: starter/backend
+        working-directory: backend
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -71,7 +71,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: starter/backend
+        working-directory: backend
     steps:
       - name: Get code
         uses: actions/checkout@v3
