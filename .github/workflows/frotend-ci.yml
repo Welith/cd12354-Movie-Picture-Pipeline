@@ -36,7 +36,7 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npm run lint
+        run: FAIL_LINT=true npm run lint
         
         
   test:
@@ -66,7 +66,7 @@ jobs:
         run: npm ci
 
       - name: Run test
-        run: FAIL_TEST=true CI=true npm run test
+        run: CI=true npm run test
         
   build:
     name: Build frontend job
